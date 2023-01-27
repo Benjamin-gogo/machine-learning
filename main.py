@@ -1,16 +1,18 @@
 from flask import Flask
 import datasetMaker
+from csv_converter import CsvConverter
+from teams_manager import TeamManager
+import json
 
-if __name__ == "__main__":
-    print("hello")
-    exit(0)
-    app = Flask(__name__)
 
+app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'hello, world'
+    return json.dumps('hello, world')
+
 
 @app.route('/countries')
 def countries():
-    return "{}"
+    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
+    return json.dumps(TeamManager.getTeams(dataframe), ensure_ascii=False).encode('utf8')

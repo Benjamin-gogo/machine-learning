@@ -1,6 +1,9 @@
+from flask import Flask
+
 class TeamManager:
 
     def getTeams(dataframe):
+
         homeColumn = "home_team"
         awayColumn = "away_team"
 

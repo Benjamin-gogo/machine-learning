@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
+from flask import Flask
 
 
 class CsvConverter:
+    INITIAL_DATASET = "match_world_cup.csv"
+
     def pd_read(file):
         try:
             data = pd.read_csv(file)
