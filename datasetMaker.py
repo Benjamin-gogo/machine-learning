@@ -52,9 +52,17 @@ if __name__ == '__main__':
     dataframe = CsvConverter.pd_read(INITIAL_DATASET)
     teams = TeamManager.getTeams(dataframe=dataframe)
 
-    data = dataframe[
-        ["home_team", "away_team", "home_team_fifa_rank", "away_team_fifa_rank", "home_team_score", "away_team_score",
-         "shoot_out", "home_team_result"]]
+    dataFiltered = dataframe[
+        ["home_team", "away_team", "home_team_score", "away_team_score", "shoot_out", "home_team_result",
+         "home_team_fifa_rank", "away_team_fifa_rank", "home_team_goalkeeper_score", "away_team_goalkeeper_score",
+         "home_team_mean_defense_score", "home_team_mean_offense_score", "home_team_mean_midfield_score",
+         "away_team_mean_defense_score", "away_team_mean_offense_score", "away_team_mean_midfield_score"]]
+
+    # Faire une copie du DataFrame
+    data = dataFiltered.copy()
+
+    # Remplacez les valeurs NaN par 50.0
+    data.fillna(50.0, inplace=True)
 
     print("Copie en cours...")
 
@@ -96,7 +104,9 @@ if __name__ == '__main__':
     else:
         data = data.assign(winning_team=binary_winners)
 
-    data.drop(data.columns[[0, 1, 6, 7]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str
+    # data.drop(data.columns[[0, 1, 6, 7]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str
+    data.drop(data.columns[[0, 1, 2, 3, 4, 5]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str + les scores
+
     data.to_csv(NEW_DATASET, index=False)
     print("Fin de la création du nouveau dataset... ")
     exit(0)

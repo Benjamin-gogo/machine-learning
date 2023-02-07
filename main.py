@@ -2,16 +2,15 @@ import os
 from cmath import sqrt
 
 import numpy as np
-from flask import Flask
+from flask import Flask, request
 import pickle
 from sklearn.metrics import confusion_matrix, mean_squared_error, accuracy_score
 
-import datasetMaker
 from csv_converter import CsvConverter
+import matches_manager as mm
 from teams_manager import TeamManager
 import json
-from sklearn import datasets
-from sklearn import metrics
+
 from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
@@ -32,14 +31,21 @@ def countries():
     dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
     return TeamManager.getTeams(dataframe)
 
+@app.route('/match')
+def match():
+    hometeam = request.args.get('home')
+    awayteam = request.args.get('away')
+
+    return mm.match(hometeam, awayteam)
+
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0')
+    #app.run(host='0.0.0.0')
 
     data = np.loadtxt(CsvConverter.CLEAN_DATASET, skiprows=1, delimiter=',')
 
-    inputs = data[:, :-1]
+    inputs = data[:, :-1] / 100
     outputs = data[:, -1]
 
     train_inputs, test_inputs, train_outputs, test_outputs = train_test_split(inputs, outputs, test_size=0.3)
@@ -50,6 +56,8 @@ if __name__ == '__main__':
 
         error = 0
         for i in range(len(inputs)):
+            print(inputs[i])
+            exit(0)
             out = mlp.predict([inputs[i]])[0]
             error += (outputs[i] - out) * (outputs[i] - out)
 
