@@ -34,7 +34,9 @@ def countries():
 
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0')
+
+
+    app.run(host='0.0.0.0')
 
     #data = CsvConverter.np_read(CsvConverter.CLEAN_DATASET)
     data = np.loadtxt(CsvConverter.CLEAN_DATASET, skiprows=1, delimiter=',')

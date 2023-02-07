@@ -9,25 +9,6 @@ INITIAL_DATASET = "match_world_cup.csv"
 NEW_DATASET = "clean_match_world_cup.csv"
 
 
-# Récupérer uniquement le nom de toutes les équipes
-def getTeams(dataset, home_team, away_team):
-    if away_team and home_team not in dataset[1:1]:  # Vérifie si le nom des colonnes existe bien
-        print("Erreur sur le nom des colonnes !")
-        exit(0)
-
-    teamsColumns = dataset[[home_team, away_team]]
-    teams = []
-
-    for index in range(len(teamsColumns)):
-        if teamsColumns[home_team][index] not in teams:
-            teams.append(teamsColumns[home_team][index])
-
-        if teamsColumns[away_team][index] not in teams:
-            teams.append(teamsColumns[away_team][index])
-
-    return (teams)
-
-
 # Récupérer l'indice des équipes
 def getIndexOfTeam(teams, team1, team2):
     ind1 = 0
@@ -67,8 +48,10 @@ def getWinningTeam(home_team, away_team, win):
 
 # Programme principal
 if __name__ == '__main__':
+
     dataframe = CsvConverter.pd_read(INITIAL_DATASET)
     teams = TeamManager.getTeams(dataframe=dataframe)
+
     data = dataframe[
         ["home_team", "away_team", "home_team_fifa_rank", "away_team_fifa_rank", "home_team_score", "away_team_score",
          "shoot_out", "home_team_result"]]
@@ -114,6 +97,6 @@ if __name__ == '__main__':
         data = data.assign(winning_team=binary_winners)
 
     data.drop(data.columns[[0, 1, 6, 7]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str
-    data.to_csv(NEW_DATASET,index=False)
+    data.to_csv(NEW_DATASET, index=False)
     print("Fin de la création du nouveau dataset... ")
     exit(0)

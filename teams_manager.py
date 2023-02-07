@@ -12,13 +12,20 @@ class TeamManager:
             exit(0)
 
         teamsColumns = dataframe[[homeColumn, awayColumn]]
-        teams = []
+        countries = {}
 
         for index in range(len(teamsColumns)):
-            if teamsColumns[homeColumn][index] not in teams:
-                teams.append(teamsColumns[homeColumn][index])
 
-            if teamsColumns[awayColumn][index] not in teams:
-                teams.append(teamsColumns[awayColumn][index])
+            if teamsColumns[homeColumn][index] not in countries:
+                countries[teamsColumns[homeColumn][index]] = {
+                    "name": teamsColumns[homeColumn][index],
+                    "flag": "https://flagcdn.com/16x12/fr.png"
+                }
 
-        return teams
+            if teamsColumns[awayColumn][index] not in countries:
+                countries[teamsColumns[awayColumn][index]] = {
+                    "name": teamsColumns[awayColumn][index],
+                    "flag": "https://flagcdn.com/16x12/fr.png"
+                }
+
+        return countries
