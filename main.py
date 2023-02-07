@@ -1,16 +1,13 @@
 import os
 from cmath import sqrt
-
 import numpy as np
 from flask import Flask, request
 import pickle
 from sklearn.metrics import confusion_matrix, mean_squared_error, accuracy_score
-
 from csv_converter import CsvConverter
 import matches_manager as mm
 from teams_manager import TeamManager
 import json
-
 from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
@@ -56,8 +53,6 @@ if __name__ == '__main__':
 
         error = 0
         for i in range(len(inputs)):
-            print(inputs[i])
-            exit(0)
             out = mlp.predict([inputs[i]])[0]
             error += (outputs[i] - out) * (outputs[i] - out)
 
