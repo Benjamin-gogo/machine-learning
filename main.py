@@ -1,9 +1,11 @@
 import os
 from cmath import sqrt
 import numpy as np
-from flask import Flask, request
+from flask import Flask, request, abort
 import pickle
 from sklearn.metrics import confusion_matrix, mean_squared_error, accuracy_score
+
+import teams_manager
 from csv_converter import CsvConverter
 import matches_manager as mm
 from teams_manager import TeamManager
@@ -14,7 +16,9 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+TEAMS_JSON = "teams.json"
 FILE_MODEL = "mlp.dat"
+
 app = Flask(__name__)
 
 
@@ -28,12 +32,21 @@ def countries():
     dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
     return TeamManager.getTeams(dataframe)
 
+@app.route('/reload-teams')
+def loadTeams():
+    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
+    teams_manager.load_teams_from_dataset(dataframe)
+    if os.path.exists(TEAMS_JSON):
+        abort(405, "An error when the program try to reload the teams.json")
+    abort(200, "Les données ont bien été rechargées")
+
+
 @app.route('/match')
 def match():
-    hometeam = request.args.get('home')
-    awayteam = request.args.get('away')
+    home_team = request.args.get('home')
+    away_team = request.args.get('away')
 
-    return mm.match(hometeam, awayteam)
+    return mm.match(home_team, away_team)
 
 
 if __name__ == '__main__':
