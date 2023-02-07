@@ -30,22 +30,14 @@ def index():
 @app.route('/countries')
 def countries():
     dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
-    return json.dumps(TeamManager.getTeams(dataframe), ensure_ascii=False).encode('utf8')
+    return TeamManager.getTeams(dataframe)
 
 
 if __name__ == '__main__':
 
-
     app.run(host='0.0.0.0')
 
-    #data = CsvConverter.np_read(CsvConverter.CLEAN_DATASET)
     data = np.loadtxt(CsvConverter.CLEAN_DATASET, skiprows=1, delimiter=',')
-
-    #print(data)
-    #print('Dataset shape: ', data.shape)
-
-    #inputs = data.iloc[:, :-1]
-    #outputs = data.iloc[:, -1]
 
     inputs = data[:, :-1]
     outputs = data[:, -1]
@@ -85,6 +77,7 @@ if __name__ == '__main__':
 
         # Effectuer des prédictions sur les données de test
         y_pred = mlp.predict(test_inputs)
+
 
         # Évaluer la performance du modèle
         mse = mean_squared_error(test_outputs, y_pred)
