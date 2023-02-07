@@ -39,7 +39,7 @@ def getIndexOfTeam(teams, team1, team2):
         if teams[i] == team2:
             ind2 = i
 
-    return (ind1, ind2)
+    return ind1, ind2
 
 
 # Mettre des 0 ou des 1 en fonction de si l'équipe à jouer ou non
@@ -67,7 +67,6 @@ def getWinningTeam(home_team, away_team, win):
 
 # Programme principal
 if __name__ == '__main__':
-    print("hello")
     dataframe = CsvConverter.pd_read(INITIAL_DATASET)
     teams = TeamManager.getTeams(dataframe=dataframe)
     data = dataframe[
@@ -75,9 +74,11 @@ if __name__ == '__main__':
          "shoot_out", "home_team_result"]]
 
     print("Copie en cours...")
+
     for current_team in teams:
         res = []
         winners = []
+        binary_winners = []
 
         temp_df = pd.DataFrame()
         for i in range(len(data)):
@@ -93,17 +94,26 @@ if __name__ == '__main__':
 
             if wt == "Win":
                 winners.append(ht)
+                binary_winners.append(0)  # HT WIN
             elif wt == "Lose":
                 winners.append(at)
+                binary_winners.append(1)  # AT WIN
             else:
                 winners.append(wt)
+                binary_winners.append(2)  # DRAW
 
         data_temp = {current_team: res}  # faire de la nouvelle colonne un dictionnaire
         temp_df = temp_df.assign(**data_temp)  # faire un dataframe temporaore
         data = data.join(temp_df)  # ajouter le nouveau dataframe a l'existant
 
-    data = data.assign(winning_team=winners)
+    # si mode=1, winning_team=name / si mode=2,winning_team = 0,1,2
+    MODE = 2
+    if MODE == 1:
+        data = data.assign(winning_team=winners)
+    else:
+        data = data.assign(winning_team=binary_winners)
+
     data.drop(data.columns[[0, 1, 6, 7]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str
-    data.to_csv(NEW_DATASET)
+    data.to_csv(NEW_DATASET,index=False)
     print("Fin de la création du nouveau dataset... ")
     exit(0)

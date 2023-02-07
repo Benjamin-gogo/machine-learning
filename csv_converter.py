@@ -5,6 +5,7 @@ from flask import Flask
 
 class CsvConverter:
     INITIAL_DATASET = "match_world_cup.csv"
+    CLEAN_DATASET = "clean_match_world_cup.csv"
 
     def pd_read(file):
         try:
