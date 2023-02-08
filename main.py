@@ -15,46 +15,42 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-TEAMS_JSON = "teams.json"
-FILE_MODEL = "mlp.dat"
+from consts import *
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    return json.dumps('hello, world')
+    return json.dumps('ENTRY POINT - OCTOPRONOS')
 
 
 @app.route('/teams')
 def countries():
-    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
+    dataframe = get_initial_df()
     return TeamManager.getTeams(dataframe)
+
 
 @app.route('/teams/<team>')
 def team(team):
-    teams = TeamManager.getTeams(CsvConverter.pd_read(CsvConverter.INITIAL_DATASET))
+    teams = TeamManager.getTeams(get_initial_df())
     return {k: v for k, v in teams.items() if v["name"] == team}.get(team, {})
+
 
 @app.route('/match')
 def match():
     home_team = request.args.get('home')
     away_team = request.args.get('away')
 
-   # return mm.match(home_team, away_team)
+
+# return mm.match(home_team, away_team)
 
 
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0')
 
-
-    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
-    teams_manager.load_teams_from_dataframe(dataframe)
-
-    exit(0)
-    data = np.loadtxt(CsvConverter.CLEAN_DATASET, skiprows=1, delimiter=',')
+    data = np.loadtxt(CLEAN_DATASET, skiprows=1, delimiter=',')
 
     inputs = data[:, :-1] / 100
     outputs = data[:, -1]
@@ -73,7 +69,7 @@ if __name__ == '__main__':
         error = sqrt(error / len(inputs))
         print(f'RMS Error: {error}')
 
-        #for i in range(5):
+        # for i in range(5):
         #    showSample(inputs[i], round(n.apply(inputs[i])))
 
     else:
@@ -94,7 +90,6 @@ if __name__ == '__main__':
 
         # Effectuer des prédictions sur les données de test
         y_pred = mlp.predict(test_inputs)
-
 
         # Évaluer la performance du modèle
         mse = mean_squared_error(test_outputs, y_pred)

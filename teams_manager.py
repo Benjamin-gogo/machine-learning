@@ -2,9 +2,9 @@ import csv
 import json
 import os
 
-TEAMS_JSON = 'teams.json'
+TEAMS_JSON = "teams.json"
 
-#get last stats
+# get last stats
 def get_team_stats(df, team_name):
     for i in df.index[::-1]:
         row = df.iloc[i]
@@ -23,6 +23,7 @@ def get_team_stats(df, team_name):
                     row['away_team_mean_offense_score'],
                     int(row['away_team_fifa_rank']))
 
+
 def get_code(file_name, country):
     with open(file_name, 'r') as file:
         reader = csv.reader(file, delimiter=';')
@@ -30,6 +31,7 @@ def get_code(file_name, country):
             if row[0] == country:
                 return row[1]
     return "mp"  # drapeau par défaut
+
 
 def load_teams_from_dataframe(dataframe):
     homeColumn = "home_team"
@@ -80,14 +82,13 @@ def load_teams_from_dataframe(dataframe):
 
 class TeamManager:
 
-    def getTeams(dataframe):
+    def getTeams(initial_df):
         # Si le JSON existe déjà, pas besoin de tout reparcourir
         if os.path.exists(TEAMS_JSON):
             with open(TEAMS_JSON, 'r', encoding='utf8') as file:
                 return json.load(file)
 
         else:
-            load_teams_from_dataframe(dataframe)
+            load_teams_from_dataframe(initial_df)
             with open(TEAMS_JSON, 'r', encoding='utf8') as file:
                 return json.load(file)
-
