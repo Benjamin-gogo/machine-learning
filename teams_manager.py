@@ -14,14 +14,14 @@ def get_team_stats(df, team_name):
                     row['home_team_mean_defense_score'],
                     row['home_team_mean_midfield_score'],
                     row['home_team_mean_offense_score'],
-                    row['home_team_fifa_rank'])
+                    int(row['home_team_fifa_rank']))
 
         if row['away_team'] == team_name:
             return (row['away_team_goalkeeper_score'],
                     row['away_team_mean_defense_score'],
                     row['away_team_mean_midfield_score'],
                     row['away_team_mean_offense_score'],
-                    row['away_team_fifa_rank'])
+                    int(row['away_team_fifa_rank']))
 
 def get_code(file_name, country):
     with open(file_name, 'r') as file:
@@ -31,7 +31,7 @@ def get_code(file_name, country):
                 return row[1]
     return "mp"  # drapeau par défaut
 
-def load_teams_from_dataset(dataframe):
+def load_teams_from_dataframe(dataframe):
     homeColumn = "home_team"
     awayColumn = "away_team"
 
@@ -87,7 +87,7 @@ class TeamManager:
                 return json.load(file)
 
         else:
-            load_teams_from_dataset(dataframe)
+            load_teams_from_dataframe(dataframe)
             with open(TEAMS_JSON, 'r', encoding='utf8') as file:
                 return json.load(file)
 

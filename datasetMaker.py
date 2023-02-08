@@ -52,8 +52,6 @@ if __name__ == '__main__':
 
     dataframe = CsvConverter.pd_read(INITIAL_DATASET)
     copy_data = dataframe.copy()
-    copy_data.fillna(50.0, inplace=True)
-
     teams = TeamManager.getTeams(dataframe=copy_data)
 
     data = copy_data[
@@ -74,7 +72,6 @@ if __name__ == '__main__':
             ht = data.loc[i, 'home_team']
             at = data.loc[i, 'away_team']
             wt = data.loc[i, 'home_team_result']
-            # print(ht, " ", at,": ",current_team)
 
             if ht == current_team or at == current_team:
                 res.append(1)
@@ -102,7 +99,6 @@ if __name__ == '__main__':
     else:
         data = data.assign(winning_team=binary_winners)
 
-    # data.drop(data.columns[[0, 1, 6, 7]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str
     data.drop(data.columns[[0, 1, 2, 3, 4, 5]], axis=1,
               inplace=True)  # Supprimer les colonnes ou il y a des caractères str + les scores
 

@@ -27,32 +27,33 @@ def index():
     return json.dumps('hello, world')
 
 
-@app.route('/countries')
+@app.route('/teams')
 def countries():
     dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
     return TeamManager.getTeams(dataframe)
 
-@app.route('/reload-teams')
-def loadTeams():
-    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
-    teams_manager.load_teams_from_dataset(dataframe)
-    if os.path.exists(TEAMS_JSON):
-        abort(405, "An error when the program try to reload the teams.json")
-    abort(200, "Les données ont bien été rechargées")
-
+@app.route('/teams/<team>')
+def team(team):
+    teams = TeamManager.getTeams(CsvConverter.pd_read(CsvConverter.INITIAL_DATASET))
+    return {k: v for k, v in teams.items() if v["name"] == team}.get(team, {})
 
 @app.route('/match')
 def match():
     home_team = request.args.get('home')
     away_team = request.args.get('away')
 
-    return mm.match(home_team, away_team)
+   # return mm.match(home_team, away_team)
 
 
 if __name__ == '__main__':
 
-    #app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')
 
+
+    dataframe = CsvConverter.pd_read(CsvConverter.INITIAL_DATASET)
+    teams_manager.load_teams_from_dataframe(dataframe)
+
+    exit(0)
     data = np.loadtxt(CsvConverter.CLEAN_DATASET, skiprows=1, delimiter=',')
 
     inputs = data[:, :-1] / 100
