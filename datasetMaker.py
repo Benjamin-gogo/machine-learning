@@ -1,5 +1,6 @@
 import pandas as pd
-from consts import get_teams, get_initial_df, CLEAN_DATASET
+from consts import get_initial_df, CLEAN_DATASET
+from teams_manager import TeamManager
 
 
 # Récupérer l'indice des équipes
@@ -43,7 +44,7 @@ def getWinningTeam(home_team, away_team, win):
 if __name__ == '__main__':
 
     dataframe = get_initial_df()
-    teams = get_teams()
+    teams = TeamManager.getTeams()
 
     data = dataframe[
         ["home_team", "away_team", "home_team_score", "away_team_score", "shoot_out", "home_team_result",

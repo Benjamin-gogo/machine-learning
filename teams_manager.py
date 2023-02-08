@@ -2,7 +2,10 @@ import csv
 import json
 import os
 
+from consts import get_initial_df
+
 TEAMS_JSON = "teams.json"
+
 
 # get last stats
 def get_team_stats(df, team_name):
@@ -48,7 +51,7 @@ def load_teams_from_dataframe(dataframe):
 
         if teamsColumns[homeColumn][index] not in countries:
             h_country = teamsColumns[homeColumn][index]
-            flag_url = "https://flagcdn.com/56x42/" + get_code("code_countries.csv", h_country) + ".png"
+            flag_url = "https://flagcdn.com/40x30/" + get_code("code_countries.csv", h_country) + ".png"
             gk, d, m, o, f = get_team_stats(dataframe, h_country)
 
             countries[h_country] = {
@@ -63,7 +66,7 @@ def load_teams_from_dataframe(dataframe):
 
         if teamsColumns[awayColumn][index] not in countries:
             a_country = teamsColumns[awayColumn][index]
-            flag_url = "https://flagcdn.com/56x42/" + get_code("code_countries.csv", a_country) + ".png"
+            flag_url = "https://flagcdn.com/40x30/" + get_code("code_countries.csv", a_country) + ".png"
             gk, d, m, o, f = get_team_stats(dataframe, a_country)
 
             countries[a_country] = {
@@ -82,7 +85,7 @@ def load_teams_from_dataframe(dataframe):
 
 class TeamManager:
 
-    def getTeams(initial_df):
+    def getTeams(initial_df=get_initial_df()):
         # Si le JSON existe déjà, pas besoin de tout reparcourir
         if os.path.exists(TEAMS_JSON):
             with open(TEAMS_JSON, 'r', encoding='utf8') as file:
@@ -92,3 +95,7 @@ class TeamManager:
             load_teams_from_dataframe(initial_df)
             with open(TEAMS_JSON, 'r', encoding='utf8') as file:
                 return json.load(file)
+
+    def getTeamInfos(self, team):
+        teams = self.getTeams(get_initial_df())
+        return {k: v for k, v in teams.items() if v["name"] == team}.get(team, {})

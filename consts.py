@@ -1,5 +1,6 @@
+import numpy as np
+
 from csv_converter import CsvConverter
-from teams_manager import TeamManager
 
 # CONSTS
 FILE_MODEL = "mlp.dat"
@@ -20,5 +21,5 @@ def get_clean_df(mode=0):
     return CsvConverter.pd_read(CLEAN_DATASET)
 
 
-def get_teams():
-    return TeamManager.getTeams(get_initial_df())
+def get_empty_input():
+    return np.zeros(221)

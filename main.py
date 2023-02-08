@@ -33,15 +33,16 @@ def countries():
 
 @app.route('/teams/<team>')
 def team(team):
-    teams = TeamManager.getTeams(get_initial_df())
-    return {k: v for k, v in teams.items() if v["name"] == team}.get(team, {})
+    return TeamManager.getTeamInfos(TeamManager, team)
+
 
 
 @app.route('/match')
 def match():
     home_team = request.args.get('home')
     away_team = request.args.get('away')
-
+    res = mm.perform_match(home_team, away_team)
+    return res
 
 # return mm.match(home_team, away_team)
 
