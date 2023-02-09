@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from consts import get_initial_df, CLEAN_DATASET
 from teams_manager import TeamManager
@@ -58,6 +59,9 @@ if __name__ == '__main__':
         res = []
         winners = []
         binary_winners = []
+        result_win = []
+        result_lose = []
+        result_draw = []
 
         temp_df = pd.DataFrame()
         for i in range(len(data)):
@@ -73,23 +77,35 @@ if __name__ == '__main__':
             if wt == "Win":
                 winners.append(ht)
                 binary_winners.append(0)  # HT WIN
+                result_win.append(1)
+                result_lose.append(0)
+                result_draw.append(0)
             elif wt == "Lose":
                 winners.append(at)
                 binary_winners.append(1)  # AT WIN
+                result_win.append(0)
+                result_lose.append(1)
+                result_draw.append(0)
             else:
                 winners.append(wt)
                 binary_winners.append(2)  # DRAW
+                result_win.append(0)
+                result_lose.append(0)
+                result_draw.append(1)
 
         data_temp = {current_team: res}  # faire de la nouvelle colonne un dictionnaire
         temp_df = temp_df.assign(**data_temp)  # faire un dataframe temporaore
         data = data.join(temp_df)  # ajouter le nouveau dataframe a l'existant
 
-    # si mode=1, winning_team=name / si mode=2,winning_team = 0,1,2
-    MODE = 2
-    if MODE == 1:
-        data = data.assign(winning_team=winners)
-    else:
-        data = data.assign(winning_team=binary_winners)
+
+    ###### PARTIE UTILISE POUR LE REGRESSOR AFIN DE DEVINER LE POURCENTAGE DE WIN ####"
+    #data = data.assign(result_1=result_lose)
+    #data = data.assign(result_2=result_draw)
+    #data = data.assign(result_0=result_win)
+
+    ########### FIN NEW PART ##########"
+
+    data = data.assign(winning_team=binary_winners)
 
     data.drop(data.columns[[0, 1, 2, 3, 4, 5]], axis=1,
               inplace=True)  # Supprimer les colonnes ou il y a des caractères str + les scores

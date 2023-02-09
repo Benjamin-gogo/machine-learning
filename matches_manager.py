@@ -62,18 +62,39 @@ def perform_match(home, away):
             mlp = pickle.load(file)
 
         inp = create_input(home, away) #fonction qui permet de créer un input
-        return json.dumps(mlp.predict([inp])[0])
+        res = {}
+        res["win_info"] = int(mlp.predict([inp])[0])
+        res["home_percentage"] = round(100 * mlp.predict_proba([inp])[0][0], 2)
+        res["away_percentage"] = round(100 * (1 - mlp.predict_proba([inp])[0][0]), 2)
+
+        print(json.dumps(res))
+        return json.dumps(res)
 
     else:
         abort(405, "Please, train again the model to predict the match")
 
-    # return json.dumps("cool")
+def perform_match_regressor(home, away):
+    TEAMS = TeamManager.getTeams()
 
-    # winner = None
-    # return winner
+    if home not in TEAMS or away not in TEAMS:
+        abort(404, "Team not found")
+
+    if os.path.exists(REGRESSOR_MODEL):
+        with open(REGRESSOR_MODEL, 'rb') as file:
+            regressor = pickle.load(file)
+
+        inp = create_input(home, away) #fonction qui permet de créer un input
+        print(regressor.predict([inp]))
+        return json.dumps(regressor.predict([inp])[0])
+
+    else:
+        abort(405, "Please, train again the model to predict the match")
 
 
 if __name__ == '__main__':
     #my_input = create_input("Bolivia", "Uruguay")
-    perform_match("Bolivia", "Uruguay")
+    #perform_match("France", "Uruguay")
+    perform_match("Bolivia", "France")
+    perform_match("France", "Bolivia")
+    #perform_match_regressor("Bolivia", "France")
 
