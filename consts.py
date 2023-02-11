@@ -23,4 +23,4 @@ def get_clean_df(mode=0):
 
 
 def get_empty_input():
-    return np.zeros(218)
+    return np.zeros(231)

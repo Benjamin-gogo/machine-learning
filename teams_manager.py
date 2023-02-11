@@ -9,6 +9,7 @@ TEAMS_JSON = "teams.json"
 
 # get last stats
 def get_team_stats(df, team_name):
+    teams = TeamManager.getTeams()
     for i in df.index[::-1]:
         row = df.iloc[i]
 
@@ -17,14 +18,24 @@ def get_team_stats(df, team_name):
                     row['home_team_mean_defense_score'],
                     row['home_team_mean_midfield_score'],
                     row['home_team_mean_offense_score'],
-                    int(row['home_team_fifa_rank']))
+                    int(row['home_team_fifa_rank']),
+                    teams[team_name]["nb_wins"],
+                    teams[team_name]["nb_lose"],
+                    teams[team_name]["nb_draw"],
+                    teams[team_name]["nb_goals_scored"],
+                    teams[team_name]["nb_goals_conceded"])
 
         if row['away_team'] == team_name:
             return (row['away_team_goalkeeper_score'],
                     row['away_team_mean_defense_score'],
                     row['away_team_mean_midfield_score'],
                     row['away_team_mean_offense_score'],
-                    int(row['away_team_fifa_rank']))
+                    int(row['away_team_fifa_rank']),
+                    teams[team_name]["nb_wins"],
+                    teams[team_name]["nb_lose"],
+                    teams[team_name]["nb_draw"],
+                    teams[team_name]["nb_goals_scored"],
+                    teams[team_name]["nb_goals_conceded"])
 
 
 def get_code(file_name, country):
@@ -41,7 +52,7 @@ def load_teams_from_dataframe(dataframe):
     awayColumn = "away_team"
 
     if homeColumn and awayColumn not in dataframe[1:1]:  # Vérifie si le nom des colonnes existe bien
-        print("Erreur sur le nom des colonnes !")
+        print("Erreur sur le nom des colones !")
         exit(0)
 
     teamsColumns = dataframe[[homeColumn, awayColumn]]
@@ -61,7 +72,12 @@ def load_teams_from_dataframe(dataframe):
                 "mean_defense": d,
                 "mean_midfield": m,
                 "mean_offense": o,
-                "fifa_rank": f
+                "fifa_rank": f,
+                "nb_wins": 0,
+                "nb_lose": 0,
+                "nb_draw": 0,
+                "nb_goals_scored": 0,
+                "nb_goals_conceded": 0
             }
 
         if teamsColumns[awayColumn][index] not in countries:
@@ -76,7 +92,12 @@ def load_teams_from_dataframe(dataframe):
                 "mean_defense": d,
                 "mean_midfield": m,
                 "mean_offense": o,
-                "fifa_rank": f
+                "fifa_rank": f,
+                "nb_wins": 0,
+                "nb_lose": 0,
+                "nb_draw": 0,
+                "nb_goals_scored": 0,
+                "nb_goals_conceded": 0
             }
 
     with open(TEAMS_JSON, "w", encoding='utf8') as file:

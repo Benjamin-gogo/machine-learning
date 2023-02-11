@@ -1,7 +1,9 @@
+import json
+
 import numpy as np
 import pandas as pd
 from consts import get_initial_df, CLEAN_DATASET
-from teams_manager import TeamManager
+from teams_manager import TeamManager, TEAMS_JSON
 
 
 # Récupérer l'indice des équipes
@@ -55,13 +57,42 @@ if __name__ == '__main__':
 
     print("Copie en cours...")
 
+    data = data.assign(home_team_total_wins=np.zeros(len(data)),
+                       home_team_total_lose=np.zeros(len(data)),
+                       home_team_total_draw=np.zeros(len(data)),
+                       away_team_total_wins=np.zeros(len(data)),
+                       away_team_total_lose=np.zeros(len(data)),
+                       away_team_total_draw=np.zeros(len(data)),
+                       home_team_total_goals_scored=np.zeros(len(data)),
+                       home_team_total_goals_conceded=np.zeros(len(data)),
+                       away_team_total_goals_scored=np.zeros(len(data)),
+                       away_team_total_goals_conceded=np.zeros(len(data)))
+
+    #AJOUTER AU DATASET, les new colonnes pour améliorer l'apprentissage de la machine####
+    for index, row in data.iterrows():
+        ht = row["home_team"]
+        at = row["away_team"]
+
+        data.at[index, "home_team_total_wins"] = teams[ht]["nb_wins"]
+        data.at[index, "home_team_total_lose"] = teams[ht]["nb_lose"]
+        data.at[index, "home_team_total_draw"] = teams[ht]["nb_draw"]
+
+        data.at[index, "away_team_total_wins"] = teams[at]["nb_wins"]
+        data.at[index, "away_team_total_lose"] = teams[at]["nb_lose"]
+        data.at[index, "away_team_total_draw"] = teams[at]["nb_draw"]
+
+        data.at[index, "home_team_total_goals_scored"] = teams[ht]["nb_goals_scored"]
+        data.at[index, "home_team_total_goals_conceded"] = teams[ht]["nb_goals_conceded"]
+
+        data.at[index, "away_team_total_goals_scored"] = teams[at]["nb_goals_scored"]
+        data.at[index, "away_team_total_goals_conceded"] = teams[at]["nb_goals_conceded"]
+
     for current_team in teams:
+        nb_wins = 0
+        nb_lose = 0
+
         res = []
-        winners = []
         binary_winners = []
-        result_win = []
-        result_lose = []
-        result_draw = []
 
         temp_df = pd.DataFrame()
         for i in range(len(data)):
@@ -70,46 +101,51 @@ if __name__ == '__main__':
             wt = data.loc[i, 'home_team_result']
 
             if ht == current_team or at == current_team:
+                ### add data in json - 1 here ###
                 res.append(1)
             else:
                 res.append(0)
 
             if wt == "Win":
-                winners.append(ht)
                 binary_winners.append(0)  # HT WIN
-                result_win.append(1)
-                result_lose.append(0)
-                result_draw.append(0)
+
             elif wt == "Lose":
-                winners.append(at)
                 binary_winners.append(1)  # AT WIN
-                result_win.append(0)
-                result_lose.append(1)
-                result_draw.append(0)
+
             else:
-                winners.append(wt)
                 binary_winners.append(2)  # DRAW
-                result_win.append(0)
-                result_lose.append(0)
-                result_draw.append(1)
 
         data_temp = {current_team: res}  # faire de la nouvelle colonne un dictionnaire
         temp_df = temp_df.assign(**data_temp)  # faire un dataframe temporaore
         data = data.join(temp_df)  # ajouter le nouveau dataframe a l'existant
 
-
-    ###### PARTIE UTILISE POUR LE REGRESSOR AFIN DE DEVINER LE POURCENTAGE DE WIN ####"
-    #data = data.assign(result_1=result_lose)
-    #data = data.assign(result_2=result_draw)
-    #data = data.assign(result_0=result_win)
-
-    ########### FIN NEW PART ##########"
-
+    ###add data in json - 2 here ###
     data = data.assign(winning_team=binary_winners)
-
-    data.drop(data.columns[[0, 1, 2, 3, 4, 5]], axis=1,
-              inplace=True)  # Supprimer les colonnes ou il y a des caractères str + les scores
+    data.drop(data.columns[[0, 1, 2, 3, 4, 5]], axis=1, inplace=True)  # Supprimer les colonnes ou il y a des caractères str + les scores
 
     data.to_csv(CLEAN_DATASET, index=False)
     print("Fin de la création du nouveau dataset... ")
     exit(0)
+
+### data in json - 1####
+
+# if ht == current_team:
+#    teams[current_team]["nb_goals_scored"] = teams[current_team]["nb_goals_scored"] + int(data.loc[i, 'home_team_score'])
+#    teams[current_team]["nb_goals_conceded"] = teams[current_team]["nb_goals_conceded"] + int(data.loc[i,'away_team_score'])
+
+# if at == current_team:
+#    teams[current_team]["nb_goals_conceded"] = teams[current_team]["nb_goals_conceded"] + int(data.loc[i, 'home_team_score'])
+#    teams[current_team]["nb_goals_scored"] = teams[current_team]["nb_goals_scored"] + int(data.loc[i, 'away_team_score'])
+
+
+# if (ht == current_team and wt == "Win") or (at == current_team and wt == "Lose"):
+#    teams[current_team]["nb_wins"] = teams[current_team]["nb_wins"] + 1
+# elif (ht == current_team and wt == "Lose") or (at == current_team and wt == "Win"):
+#    teams[current_team]["nb_lose"] = teams[current_team]["nb_lose"] + 1
+# else:
+#    teams[current_team]["nb_draw"] = teams[current_team]["nb_draw"] + 1
+
+
+   ########### data in json - 2 ##########"
+    #with open(TEAMS_JSON, "w", encoding='utf8') as file:
+    #    json.dump(teams, file, ensure_ascii=False)

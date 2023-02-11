@@ -1,6 +1,7 @@
 import json
 import os
 import pickle
+from random import random
 
 from flask import abort
 
@@ -29,8 +30,8 @@ def getIndexOfTeams(home, away):
 
 def create_input(home, away):
     formatted_input = get_empty_input()
-    home_gk, home_d, home_m, home_o, home_f = get_team_stats(get_initial_df(), home)
-    away_gk, away_d, away_m, away_o, away_f = get_team_stats(get_initial_df(), away)
+    home_gk, home_d, home_m, home_o, home_f, home_tw, home_tl, home_td, home_tgs, home_tgc = get_team_stats(get_initial_df(), home)
+    away_gk, away_d, away_m, away_o, away_f, away_tw, away_tl, away_td, away_tgs, away_tgc = get_team_stats(get_initial_df(), away)
 
     formatted_input[0] = home_f
     formatted_input[1] = away_f
@@ -42,13 +43,23 @@ def create_input(home, away):
     formatted_input[7] = away_d
     formatted_input[8] = away_o
     formatted_input[9] = away_m
+    formatted_input[10] = home_tw
+    formatted_input[11] = home_tl
+    formatted_input[12] = home_td
+    formatted_input[13] = away_tw
+    formatted_input[14] = away_tl
+    formatted_input[15] = away_td
+    formatted_input[16] = home_tgs
+    formatted_input[17] = home_tgc
+    formatted_input[18] = away_tgs
+    formatted_input[19] = away_tgc
 
     ind_home, ind_away = getIndexOfTeams(home, away)
 
-    formatted_input[ind_home + 10] = 1
-    formatted_input[ind_away + 10] = 1
+    formatted_input[ind_home + 20] = 1
+    formatted_input[ind_away + 20] = 1
 
-    return formatted_input / 100
+    return formatted_input / 1000
 
 
 def perform_match(home, away):
@@ -62,10 +73,9 @@ def perform_match(home, away):
             mlp = pickle.load(file)
 
         inp = create_input(home, away) #fonction qui permet de créer un input
-        res = {}
-        res["win_info"] = int(mlp.predict([inp])[0])
-        res["home_percentage"] = round(100 * mlp.predict_proba([inp])[0][0], 2)
-        res["away_percentage"] = round(100 * (1 - mlp.predict_proba([inp])[0][0]), 2)
+        res = {"win_info": int(mlp.predict([inp])[0]),
+               "home_percentage": round(100 * mlp.predict_proba([inp])[0][0], 2),
+               "away_percentage": round(100 * (1 - mlp.predict_proba([inp])[0][0]), 2)}
 
         print(json.dumps(res))
         return json.dumps(res)
@@ -90,11 +100,15 @@ def perform_match_regressor(home, away):
     else:
         abort(405, "Please, train again the model to predict the match")
 
+def world_cup_predict_winner():
+    selected_teams = random.sample(TeamManager.getTeams(), 48)
+    print(selected_teams)
 
 if __name__ == '__main__':
     #my_input = create_input("Bolivia", "Uruguay")
     #perform_match("France", "Uruguay")
     perform_match("Bolivia", "France")
-    perform_match("France", "Bolivia")
+    perform_match("France", "Argentina")
+    perform_match("Argentina", "France")
     #perform_match_regressor("Bolivia", "France")
 
