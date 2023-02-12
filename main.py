@@ -1,3 +1,4 @@
+import ast
 import os
 from cmath import sqrt
 import numpy as np
@@ -49,13 +50,16 @@ def match():
     res = mm.perform_match(home_team, away_team)
     return res
 
+
 @app.route('/world_cup')
-def match():
+def world_cup():
     selected_teams = request.args.get('selected_teams')
-    print(selected_teams)
+    winner = mm.world_cup_predict_winner(selected_teams)
+    return json.dumps(winner)
+
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')
     data = np.loadtxt(CLEAN_DATASET, skiprows=1, delimiter=',')
 
     mlp_inputs = data[:, :-1] / 1000
@@ -64,25 +68,23 @@ if __name__ == '__main__':
     train_inputs, test_inputs, train_outputs, test_outputs = train_test_split(mlp_inputs, mlp_outputs, test_size=0.2)
 
     mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=1000, alpha=0.001, learning_rate_init=0.01)
-    #mlp = MLPRegressor(hidden_layer_sizes=(100,), max_iter=1000, alpha=0.001, learning_rate_init=0.01)
-    #mlp = LogisticRegression(fit_intercept=True, intercept_scaling=2, max_iter=2000)
-    #mlp = RandomForestClassifier(n_estimators=200)
-    #mlp = SVC(random_state=1, shrinking=True, tol=0.0001)
+    # mlp = MLPRegressor(hidden_layer_sizes=(100,), max_iter=1000, alpha=0.001, learning_rate_init=0.01)
+    # mlp = LogisticRegression(fit_intercept=True, intercept_scaling=2, max_iter=2000)
+    # mlp = RandomForestClassifier(n_estimators=200)
+    # mlp = SVC(random_state=1, shrinking=True, tol=0.0001)
 
     mlp.fit(train_inputs, train_outputs)
     with open(FILE_MODEL, 'wb') as file:
         pickle.dump(mlp, file)
 
-
     expected_y = test_outputs
     predicted_y = mlp.predict(test_inputs)
 
     print(mlp.predict(test_inputs))
-    #print(r2_score(expected_y, predicted_y))
-
+    # print(r2_score(expected_y, predicted_y))
 
     print(f'Training Classifier score: {100 * mlp.score(train_inputs, train_outputs):.2f}%')
     print(f'Test Classifier score    : {100 * mlp.score(test_inputs, test_outputs):.2f}%')
-    #print(f'Mean Squared Error:  {mean_squared_error(test_outputs, mlp.predict(test_inputs)):.2f}%')
+    # print(f'Mean Squared Error:  {mean_squared_error(test_outputs, mlp.predict(test_inputs)):.2f}%')
     print(f'Accuracy: {100 * accuracy_score(test_outputs, mlp.predict(test_inputs).round()): .2f}%')
     print(confusion_matrix(test_outputs, mlp.predict(test_inputs)))
