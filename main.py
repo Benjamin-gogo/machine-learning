@@ -49,6 +49,10 @@ def match():
     res = mm.perform_match(home_team, away_team)
     return res
 
+@app.route('/world_cup')
+def match():
+    selected_teams = request.args.get('selected_teams')
+    print(selected_teams)
 
 if __name__ == '__main__':
     #app.run(host='0.0.0.0')

@@ -8,7 +8,7 @@ class CsvConverter:
     def pd_read(file):
         try:
             data = pd.read_csv(file)
-            print("Lecture du fichier CSV en cours...")
+            #print("Lecture du fichier CSV en cours...")
             return data
 
         except Exception as err:
@@ -19,7 +19,7 @@ class CsvConverter:
     def np_read(file):
         try:
             data = np.loadtxt(file)
-            print("Lecture du fichier CSV en cours...")
+            #print("Lecture du fichier CSV en cours...")
             return data
 
         except Exception as err:
