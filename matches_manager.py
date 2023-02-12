@@ -141,15 +141,17 @@ def get_selected_teams(tab):
 
 def world_cup_predict_winner(param_teams):
     teams = ast.literal_eval(param_teams)
+    res = {}
 
     pools = get_pools(teams)
     qualified_teams_16 = get_16_teams_qualified(pools, teams)
-    qualified_teams_8 = get_teams_qualified(qualified_teams_16, option_shuffle=True)
-    qualified_teams_4 = get_teams_qualified(qualified_teams_8)
-    qualified_teams_2 = get_teams_qualified(qualified_teams_4)
-    winner = get_teams_qualified(qualified_teams_2)
+    qualified_teams_8 = get_teams_qualified(res, qualified_teams_16, option_shuffle=True)
+    qualified_teams_4 = get_teams_qualified(res, qualified_teams_8)
+    qualified_teams_2 = get_teams_qualified(res, qualified_teams_4)
+    winner = get_teams_qualified(res, qualified_teams_2)
+    res["winner"] = winner[0]
 
-    return winner
+    return res
 
 
 def get_pools(teams):
@@ -159,7 +161,6 @@ def get_pools(teams):
 
 def get_16_teams_qualified(pools, teams):
     points = init_tab_points(teams)
-
     # Boucle pour jouer les matchs de qualification et donner des points
     for poule in pools:
         for i in range(len(poule)):
@@ -167,7 +168,9 @@ def get_16_teams_qualified(pools, teams):
                 team1 = poule[i]
                 team2 = poule[j]
                 result = perform_match(team1, team2)
+
                 calculating_points(team1, team2, json.loads(result)["win_info"], points)
+
 
     #trier les équipes par ordre décroissant dans chaque poule
     teams_dicts = [dict(sorted(list(points.items())[i:i + 4], key=lambda x: x[1], reverse=True)) for i
@@ -186,17 +189,27 @@ def get_16_teams_qualified(pools, teams):
 
     return res
 
-def get_teams_qualified(teams, option_shuffle = False):
+def get_teams_qualified(res, teams, option_shuffle = False):
+    res_tab_matches = []
+
     if option_shuffle:
         random.shuffle(teams)
 
     groups = [teams[i:i + 2] for i in range(0, len(teams), 2)]
-
     for group in groups:
+        res_match = {}
+
         team1 = group[0]
         team2 = group[1]
 
         result = perform_match(team1, team2, option_draw=False)
+        res_match["team1"] = team1
+        res_match["team2"] = team2
+        res_match["team1_percentage"] = json.loads(result)["home_percentage"]
+        res_match["team2_percentage"] = json.loads(result)["away_percentage"]
+        res_match["win_info"] = json.loads(result)["win_info"]
+        res_tab_matches.append(res_match)
+
         if result == 0:
             eliminated_team = team2
         else:
@@ -207,6 +220,7 @@ def get_teams_qualified(teams, option_shuffle = False):
         except ValueError:
             print(f"{eliminated_team} n'existe pas.")
 
+    res[len(teams)] = res_tab_matches
     return teams
 
 if __name__ == '__main__':
@@ -218,6 +232,6 @@ if __name__ == '__main__':
              'Turkey', 'Malta', 'Germany', 'Mexico',
              'USA', 'Tunisia', 'Togo', 'Ghana'])
 
-    print(p)
     winner = world_cup_predict_winner(p)
+
     print(winner)

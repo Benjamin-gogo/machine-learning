@@ -54,8 +54,16 @@ def match():
 @app.route('/world_cup')
 def world_cup():
     selected_teams = request.args.get('selected_teams')
-    winner = mm.world_cup_predict_winner(selected_teams)
-    return json.dumps(winner)
+    """selected_teams = str(['France', 'Mali', 'Argentina', 'Brazil','Austria', 'Colombia', 'Peru', 'Bolivia',
+             'Poland', 'Portugal', 'Denmark', 'Spain',
+             'Senegal', 'Zambia', 'Nigeria', 'Italy',
+             'Guinea', 'Cameroon', 'Morocco', 'Belgium',
+             'Algeria', 'Wales', 'Israel', 'Greece',
+             'Turkey', 'Malta', 'Germany', 'Mexico',
+             'USA', 'Tunisia', 'Togo', 'Ghana'])"""
+
+    res = mm.world_cup_predict_winner(selected_teams)
+    return json.dumps(res)
 
 
 if __name__ == '__main__':
