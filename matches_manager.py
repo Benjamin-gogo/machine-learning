@@ -203,8 +203,8 @@ def get_teams_qualified(res, teams, option_shuffle = False):
         team2 = group[1]
 
         result = perform_match(team1, team2, option_draw=False)
-        res_match["team1"] = team1
-        res_match["team2"] = team2
+        res_match["name_team1"] = team1
+        res_match["name_team2"] = team2
         res_match["team1_percentage"] = json.loads(result)["home_percentage"]
         res_match["team2_percentage"] = json.loads(result)["away_percentage"]
         res_match["win_info"] = json.loads(result)["win_info"]
